@@ -61,22 +61,19 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http
-                .csrf().disable()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey))
-                .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig),JwtUsernameAndPasswordAuthenticationFilter.class)
-                .authorizeRequests()
-                .antMatchers("/login").permitAll()
-                .antMatchers("/api/**").hasRole(READER.name())
-                .anyRequest()
-                .authenticated()
-                .and()
-                .exceptionHandling()
-                   .accessDeniedPage("/403");
+        http.csrf().disable();
 
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+        http.addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig, secretKey))
+            .addFilterAfter(new JwtTokenVerifier(secretKey, jwtConfig),JwtUsernameAndPasswordAuthenticationFilter.class)
+            .authorizeRequests()
+            .antMatchers("/login").permitAll()
+            .antMatchers("/api/**").hasRole(READER.name())
+            .anyRequest()
+            .authenticated();
+
+        http.exceptionHandling().accessDeniedPage("/403");
     }
 
     @Override
